@@ -1,4 +1,5 @@
 const { ApexLegendsAPI } = require('../../config.json');
+const Discord = require('discord.js');
 const fetch = require('node-fetch');
 
 module.exports = {
@@ -15,14 +16,16 @@ module.exports = {
 		})
 			.then(response => response.json())
 			.then(data => {
-				let result = '';
+
+				const embed = new Discord.MessageEmbed()
+					.setTitle('Server status:');
 				for(const server in data.ApexOauth_Steam) {
-					result += `${server}\n`;
-					result += `Status = ${data.ApexOauth_Steam[server].Status}\n`;
-					result += `Latency = ${data.ApexOauth_Steam[server].ResponseTime}\n`;
-					result += '=============\n';
+					const name = `${server}\n`;
+					const value = `Status: ${data.ApexOauth_Steam[server].Status}\nLatency: ${data.ApexOauth_Steam[server].ResponseTime}`;
+
+					embed.addField(name, value, true);
 				}
-				message.channel.send(result);
+				message.channel.send(embed);
 			});
 
 	},
