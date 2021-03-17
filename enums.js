@@ -3,7 +3,4 @@ module.exports = {
 		OLYMPUS: 'Olympus',
 		KINGSCANYON: 'Kings Canyon',
 	},
-}
-
-
-
+};

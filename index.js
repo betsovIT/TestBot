@@ -1,5 +1,7 @@
 const fs = require('fs');
 const Discord = require('discord.js');
+const dotenv = require('dotenv');
+dotenv.config();
 
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
@@ -14,19 +16,16 @@ for (const folder of commandFolders) {
 
 		client.commands.set(command.name, command);
 	}
-
 }
-
-const { prefix, token } = require('./config.json');
 
 client.once('ready', () => {
 	console.log('ready!');
 });
 
 client.on('message', message => {
-	if (!message.content.startsWith(prefix) || message.author.bot) return;
+	if (!message.content.startsWith(process.env.PREFIX) || message.author.bot) return;
 
-	const args = message.content.slice(prefix.length).trim().split(/ +/);
+	const args = message.content.slice(process.env.PREFIX.length).trim().split(/ +/);
 	const commandName = args.shift().toLocaleLowerCase();
 
 	if (!client.commands.has(commandName)) return;
@@ -36,8 +35,8 @@ client.on('message', message => {
 	if (command.args && !args.length) {
 		let reply = `You didn't provide any arguments, ${message.author}`;
 
-		if(command.usage) {
-			reply += `\n The proper usage would be \`${prefix}${command.name} ${command.usage}\``;
+		if (command.usage) {
+			reply += `\n The proper usage would be \`${process.env.PREFIX}${command.name} ${command.usage}\``;
 		}
 
 		return message.channel.send(reply);
@@ -54,7 +53,7 @@ client.on('message', message => {
 	if (timestamps.has(message.author.id)) {
 		const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
 
-		if(now < expirationTime) {
+		if (now < expirationTime) {
 			const timeLeft = (expirationTime - now) / 1000;
 			return message.reply(`please wait ${timeLeft.toFixed(1)} more second(s) before reusing the \`${command.name}\` command.`);
 		}
@@ -72,4 +71,4 @@ client.on('message', message => {
 	}
 });
 
-client.login(token);
+client.login(process.env.TOKEN);

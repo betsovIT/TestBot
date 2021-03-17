@@ -1,5 +1,6 @@
-const { ApexLegendsAPI } = require('../../config.json');
 const fetch = require('node-fetch');
+const dotenv = require('dotenv');
+dotenv.config();
 
 module.exports = {
 	name: 'apex-stats',
@@ -16,12 +17,16 @@ module.exports = {
 			{
 				method: 'GET',
 				headers: {
-					'Authorization': `${ApexLegendsAPI}`,
+					'Authorization': `${process.env.APEXLEGENDSAPI}`,
 				},
 			})
 			.then(response => response.json())
 			.then(data => {
 				message.channel.send(`Your level is: ${data.global.level};\nYour selected legend is: ${data.legends.selected.LegendName} \nYour current skin is: ${data.legends.selected.gameInfo.skin}`);
+			})
+			.catch(error => {
+				console.error(error);
+				message.channel.send('Stupid API error.');
 			});
 	},
 };

@@ -1,7 +1,8 @@
-const { ApexLegendsAPI } = require('../../config.json');
 const { maps } = require('../../enums.js');
 const Discord = require('discord.js');
 const fetch = require('node-fetch');
+const dotenv = require('dotenv');
+dotenv.config();
 
 module.exports = {
 	name: 'apex-map',
@@ -14,7 +15,7 @@ module.exports = {
 			{
 				method: 'GET',
 				headers: {
-					'Authorization': `${ApexLegendsAPI}`,
+					'Authorization': `${process.env.APEXLEGENDSAPI}`,
 				},
 			})
 			.then(response => response.json())
@@ -49,6 +50,10 @@ module.exports = {
 				// oldCall.currentMapEnd = currentMapEnd;
 
 				message.channel.send(embed);
+			})
+			.catch(error => {
+				console.error(error);
+				message.channel.send('Stupid API error...');
 			});
 	},
 };
