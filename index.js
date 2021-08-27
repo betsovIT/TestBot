@@ -24,11 +24,11 @@ client.once('ready', () => {
 
 client.on('message', message => {
 	// just a test to fuck with Stefcho
-	if (message.content.indexOf('flat earth') > -1) {
+	if (message.content.toLowerCase().indexOf('flat earth') > -1) {
 		// message.channel.;
 		if (message.author.bot) return;
 		message.delete();
-		const reply = '||' + message.content + '||' + 'Here be autism';
+		const reply = '||' + message.content + '||' + 'Here be autism by: ' + message.author.username;
 		message.channel.send(reply);
 	}
 
