@@ -30,7 +30,7 @@ client.on('message', message => {
 
 	// just a test to fuck with Stefcho
 
-	if (message.content.indexOf('flat earth')) {
+	if (message.content.indexOf('flat earth') > -1) {
 		message.edit('||' + `${message.content}` + '||');
 	}
 
