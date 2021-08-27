@@ -28,6 +28,15 @@ client.on('message', message => {
 	const args = message.content.slice(process.env.PREFIX.length).trim().split(/ +/);
 	const commandName = args.shift().toLocaleLowerCase();
 
+	// just a test to fuck with Stefcho
+
+	if (message.content.indexOf('flat earth')) {
+		message.edit('||' + `${message.content}` + '||');
+	}
+
+
+	// regular flow
+
 	if (!client.commands.has(commandName)) return;
 
 	const command = client.commands.get(commandName);
