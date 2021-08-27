@@ -23,19 +23,20 @@ client.once('ready', () => {
 });
 
 client.on('message', message => {
+	// just a test to fuck with Stefcho
+	if (message.content.indexOf('flat earth') > -1) {
+		// message.channel.;
+		if (message.author.bot) return;
+		message.delete();
+		const reply = '||' + message.content + '||' + 'Here be autism';
+		message.channel.send(reply);
+	}
+
+	// regular flow
 	if (!message.content.startsWith(process.env.PREFIX) || message.author.bot) return;
 
 	const args = message.content.slice(process.env.PREFIX.length).trim().split(/ +/);
 	const commandName = args.shift().toLocaleLowerCase();
-
-	// just a test to fuck with Stefcho
-
-	if (message.content.indexOf('flat earth') > -1) {
-		message.edit('||' + `${message.content}` + '||');
-	}
-
-
-	// regular flow
 
 	if (!client.commands.has(commandName)) return;
 
