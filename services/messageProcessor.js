@@ -6,7 +6,7 @@ module.exports = {
 		const arr = JSON.parse(file).mappings;
 
 		for (const map of arr) {
-			if (message.content.indexOf(map.keyword.toLowerCase()) > -1) {
+			if (message.content.indexOf(map.keyword) > -1) {
 				message.channel.send(map.url);
 			}
 		}
