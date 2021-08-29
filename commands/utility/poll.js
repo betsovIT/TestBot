@@ -33,7 +33,7 @@ module.exports = {
 
 		const count = upvotes - downvotes;
 
-		if (!entry && count >= 2) {
+		if (!entry && count >= 3) {
 			obj.mappings.push({
 				keyword: args[0],
 				url: args[1],
