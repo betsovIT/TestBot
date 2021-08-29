@@ -2,6 +2,7 @@ module.exports = {
 	name: 'play',
 	description: 'Play a meme sound.',
 	isVoice: true,
+	type: 'message',
 	cooldown: 20,
 	async execute(message, args) {
 		if (message.member.voice.channel) {

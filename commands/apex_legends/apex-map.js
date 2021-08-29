@@ -7,6 +7,7 @@ dotenv.config();
 module.exports = {
 	name: 'apex-map',
 	description: 'Display current map rotation',
+	type: 'message',
 	execute(message, args) {
 		const url = 'https://api.mozambiquehe.re/maprotation';
 		// let oldCall = {};

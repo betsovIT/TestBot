@@ -3,6 +3,7 @@ const fs = require('fs');
 module.exports = {
 	name: 'reload',
 	description: 'Reloads a command',
+	type: 'message',
 	execute(message, args) {
 		if (!args) return message.channel.send(`You didn't pass any commands to reload, ${message.author}!`);
 		const commandName = args[0].toLowerCase();

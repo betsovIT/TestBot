@@ -6,6 +6,7 @@ dotenv.config();
 module.exports = {
 	name: 'apex-servers',
 	description: 'Display current map rotation',
+	type: 'message',
 	execute(message, args) {
 		const url = 'https://api.mozambiquehe.re/servers';
 

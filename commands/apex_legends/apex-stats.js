@@ -5,6 +5,7 @@ dotenv.config();
 module.exports = {
 	name: 'apex-stats',
 	description: 'Recieve apex stats for a given player',
+	type: 'message',
 	args: true,
 	execute(message, args) {
 		let url = 'https://api.mozambiquehe.re/bridge?version=5&platform=PC';

@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "@discordjs/opus": "^0.4.0",
+    "@types/node": "^10.17.55",
     "discord.js": "^12.5.1",
     "dotenv": "^8.2.0",
     "eslint": "^7.22.0",

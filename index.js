@@ -1,83 +1,106 @@
-const fs = require('fs');
 const Discord = require('discord.js');
 const dotenv = require('dotenv');
 dotenv.config();
+const commandLoader = require('./services/commandProcessor.js');
+const messageProcessor = require('./services/messageProcessor.js');
 
-const client = new Discord.Client();
-client.commands = new Discord.Collection();
+const client = new Discord.Client({ partials: ['USER', 'REACTION', 'MESSAGE'] });
+
 const cooldowns = new Discord.Collection();
 
-const commandFolders = fs.readdirSync('./commands');
-for (const folder of commandFolders) {
-	const commandFiles = fs.readdirSync(`./commands/${folder}`).filter(file => file.endsWith('.js'));
-
-	for (const file of commandFiles) {
-		const command = require(`./commands/${folder}/${file}`);
-
-		client.commands.set(command.name, command);
-	}
-}
+commandLoader.LoadCommands(client, 'commands');
 
 client.once('ready', () => {
 	console.log('ready!');
 });
 
-client.on('message', message => {
-	// just a test to fuck with Stefcho
-	if (message.content.toLowerCase().indexOf('flat earth') > -1) {
-		// message.channel.;
-		if (message.author.bot) return;
-		message.delete();
-		const reply = '||' + message.content + '||' + 'Here be autism by: ' + message.author.username;
-		message.channel.send(reply);
-	}
+client.on('message', async messagePartial => {
+	let message;
+	messagePartial.partial ? message = await messagePartial.fetch() : message = messagePartial;
 
-	// regular flow
+	if (message.author.bot) return;
+
+	if (!message.content.startsWith(process.env.PREFIX)) {
+		messageProcessor.reactToKeyword(message);
+	}
+	else {
+		const args = message.content.slice(process.env.PREFIX.length).trim().split(/ +/);
+		const commandName = args.shift().toLocaleLowerCase();
+
+		// #region Parsing of command and arguments
+		if (!client.commands.has(commandName)) return;
+
+		const command = client.commands.get(commandName);
+
+		if (command.type != 'message') return;
+		if (command.args && !args.length) {
+			let reply = `You didn't provide any arguments, ${message.author}`;
+
+			if (command.usage) {
+				reply += `\n The proper usage would be \`${process.env.PREFIX}${command.name} ${command.usage}\``;
+			}
+
+			return message.channel.send(reply);
+		}
+		// #endregion
+
+		// #region Cooldowns
+		if (!cooldowns.has(command.name)) {
+			cooldowns.set(command.name, new Discord.Collection());
+		}
+
+		const now = Date.now();
+		const timestamps = cooldowns.get(command.name);
+		const cooldownAmount = (command.cooldown || 3) * 1000;
+
+		if (timestamps.has(message.author.id)) {
+			const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
+
+			if (now < expirationTime) {
+				const timeLeft = (expirationTime - now) / 1000;
+				return message.reply(`please wait ${timeLeft.toFixed(1)} more second(s) before reusing the \`${command.name}\` command.`);
+			}
+		}
+
+		timestamps.set(message.author.id, now);
+		setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
+		// #endregion
+
+		// Execution
+		try {
+			command.execute(message, args);
+		}
+		catch (error) {
+			console.error(error);
+			message.reply('There was an error trying to execute that command!');
+		}
+	}
+});
+
+client.on('messageReactionAdd', async (reactionPartial, userPartial) => {
+	let message;
+	let reaction;
+	let user;
+
+	reactionPartial.partial ? reaction = await reactionPartial.fetch() : reaction = reactionPartial;
+	reaction.message.partial ? message = await reaction.message.fetch() : message = reaction.message;
+	userPartial.partial ? user = await userPartial.fetch() : user = userPartial;
+
 	if (!message.content.startsWith(process.env.PREFIX) || message.author.bot) return;
 
-	const args = message.content.slice(process.env.PREFIX.length).trim().split(/ +/);
+	const args = reaction.message.content.slice(process.env.PREFIX.length).trim().split(/ +/);
 	const commandName = args.shift().toLocaleLowerCase();
 
 	if (!client.commands.has(commandName)) return;
 
 	const command = client.commands.get(commandName);
-
-	if (command.args && !args.length) {
-		let reply = `You didn't provide any arguments, ${message.author}`;
-
-		if (command.usage) {
-			reply += `\n The proper usage would be \`${process.env.PREFIX}${command.name} ${command.usage}\``;
-		}
-
-		return message.channel.send(reply);
-	}
-
-	if (!cooldowns.has(command.name)) {
-		cooldowns.set(command.name, new Discord.Collection());
-	}
-
-	const now = Date.now();
-	const timestamps = cooldowns.get(command.name);
-	const cooldownAmount = (command.cooldown || 3) * 1000;
-
-	if (timestamps.has(message.author.id)) {
-		const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
-
-		if (now < expirationTime) {
-			const timeLeft = (expirationTime - now) / 1000;
-			return message.reply(`please wait ${timeLeft.toFixed(1)} more second(s) before reusing the \`${command.name}\` command.`);
-		}
-	}
-
-	timestamps.set(message.author.id, now);
-	setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
+	if (command.type != 'reaction') return;
 
 	try {
-		command.execute(message, args);
+		command.execute(reaction, user, args);
 	}
 	catch (error) {
 		console.error(error);
-		message.reply('There was an error trying to execute that command!');
 	}
 });
 

@@ -1,6 +1,7 @@
 module.exports = {
 	name: 'avatar',
 	description: 'Returns the avatar of a specified user.',
+	type: 'message',
 	cooldown: 10,
 	args: true,
 	async execute(message, args) {
