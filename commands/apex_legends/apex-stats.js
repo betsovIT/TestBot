@@ -56,8 +56,6 @@ module.exports = {
 						},
 						"thumbnail": {
 							"url": `attachment://apex.png`,
-							"height": 30,
-							"width": 30
 						  }
 					};
 
