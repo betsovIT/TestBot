@@ -2,6 +2,7 @@ const Discord = require('discord.js');
 const dotenv = require('dotenv');
 dotenv.config();
 const commandLoader = require('./services/commandProcessor.js');
+const prefix = '$$';
 const client = new Discord.Client({ partials: ['USER', 'REACTION', 'MESSAGE'] });
 const cooldowns = new Discord.Collection();
 commandLoader.LoadCommands(client, 'commands');
@@ -16,8 +17,7 @@ client.on('message', async messagePartial => {
 
 	if (message.author.bot) return;
 
-
-	const args = message.content.slice(process.env.PREFIX.length).trim().split(/ +/);
+	const args = message.content.slice(prefix.length).trim().split(/ +/);
 	const commandName = args.shift().toLocaleLowerCase();
 
 	// #region Parsing of command and arguments
@@ -30,7 +30,7 @@ client.on('message', async messagePartial => {
 		let reply = `You didn't provide any arguments, ${message.author}`;
 
 		if (command.usage) {
-			reply += `\n The proper usage would be \`${process.env.PREFIX}${command.name} ${command.usage}\``;
+			reply += `\n The proper usage would be \`${prefix}${command.name} ${command.usage}\``;
 		}
 
 		return message.channel.send(reply);
@@ -78,9 +78,9 @@ client.on('messageReactionAdd', async (reactionPartial, userPartial) => {
 	reaction.message.partial ? message = await reaction.message.fetch() : message = reaction.message;
 	userPartial.partial ? user = await userPartial.fetch() : user = userPartial;
 
-	if (!message.content.startsWith(process.env.PREFIX) || message.author.bot) return;
+	if (!message.content.startsWith(prefix) || message.author.bot) return;
 
-	const args = reaction.message.content.slice(process.env.PREFIX.length).trim().split(/ +/);
+	const args = reaction.message.content.slice(prefix).trim().split(/ +/);
 	const commandName = args.shift().toLocaleLowerCase();
 
 	if (!client.commands.has(commandName)) return;
