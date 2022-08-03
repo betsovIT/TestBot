@@ -1,19 +1,15 @@
+const { AttachmentBuilder } = require('discord.js');
 const fetch = require('node-fetch');
 const dotenv = require('dotenv');
-const Discord = require('discord.js');
 dotenv.config();
 
 module.exports = {
 	name: 'apex-stats',
-	description: 'Recieve apex stats for a given player',
-	type: 'message',
-	args: true,
-	execute(message, args) {
+	cooldown:5,
+	execute(interaction) {
 		let url = 'https://api.mozambiquehe.re/bridge?platform=PC';
-		const player = args[0];
+		const player = interaction.options.data.find(o => o.name == 'player')?.value;
 		url += `&player=${player}`;
-
-
 		fetch(url,
 			{
 				method: 'GET',
@@ -23,8 +19,10 @@ module.exports = {
 			})
 			.then(response => response.json())
 			.then(data => {
-				const rankDivision = new Discord.MessageAttachment(`./assets/rankIcons/${data.global.rank.rankName.toLowerCase()}.png`)
-				const apexIcon = new Discord.MessageAttachment(`./assets/apex.png`)
+				if (data.Error != null) throw Error;
+
+				const rankDivision = new AttachmentBuilder(`./assets/rankIcons/${data.global.rank.rankName.toLowerCase()}.png`);
+				const apexIcon = new AttachmentBuilder(`./assets/apex.png`);
 				const embed = {
 						"type": "rich",
 						"title": `Player: ${data.global.name}`,
@@ -47,10 +45,6 @@ module.exports = {
 							"inline": true
 						  }
 						],
-						"files":[
-							rankDivision,
-							apexIcon
-						],
 						"image": {
 							"url": `attachment://${data.global.rank.rankName.toLowerCase()}.png`
 						},
@@ -59,12 +53,11 @@ module.exports = {
 						  }
 					};
 
-				message.channel.send({ embed: embed});
-				// message.channel.send(file);
+				interaction.channel.send({ embeds: [embed], files: [rankDivision, apexIcon] });
 			})
 			.catch(error => {
 				console.error(error);
-				message.channel.send('Stupid API error.');
+				interaction.channel.send('Stupid API error.');
 			});
 	},
 };
