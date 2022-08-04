@@ -1,60 +1,74 @@
-const { maps } = require('../../enums.js');
-const Discord = require('discord.js');
+const { AttachmentBuilder } = require('discord.js');
 const fetch = require('node-fetch');
 const dotenv = require('dotenv');
 dotenv.config();
 
 module.exports = {
 	name: 'apex-map',
-	description: 'Display current map rotation',
-	type: 'message',
-	execute(message, args) {
-		const url = 'https://api.mozambiquehe.re/maprotation';
-		// let oldCall = {};
+	async execute(interaction) {
+		await interaction.reply("Loading...");
 
-		fetch(url,
+		try {
+			const url = 'https://api.mozambiquehe.re/maprotation';
+			const response = await fetch(url,
 			{
 				method: 'GET',
 				headers: {
 					'Authorization': `${process.env.APEXLEGENDSAPI}`,
 				},
-			})
-			.then(response => response.json())
-			.then(data => {
-				const currentMap = data.current.map;
-				const nextMap = data.next.map;
-				const currentMapEnd = new Date(data.current.readableDate_start);
-
-				const embed = new Discord.MessageEmbed()
-					.setTitle(`Current map: ${currentMap}`)
-					.addFields(
-						{ name: 'Map ends:', value: currentMapEnd.toLocaleString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', hour12: false, minute: '2-digit', timeZone: 'Europe/Sofia' }) },
-						{ name: 'Next map:', value: nextMap },
-					)
-					.setAuthor('TestBot')
-					.setTimestamp()
-					.setColor('#ccc072');
-
-				if(currentMap == maps.KINGSCANYON) {
-					embed
-						.attachFiles(['./assets/kingsCanyon.jpg'])
-						.setImage('attachment://kingsCanyon.jpg');
-				}
-				else if(currentMap == maps.OLYMPUS) {
-					embed
-						.attachFiles(['./assets/olympus.jpg'])
-						.setImage('attachment://olympus.jpg');
-				}
-
-				// oldCall.currentMap = currentMap;
-				// oldCall.nextMap = nextMap;
-				// oldCall.currentMapEnd = currentMapEnd;
-
-				message.channel.send(embed);
-			})
-			.catch(error => {
-				console.error(error);
-				message.channel.send('Stupid API error...');
 			});
+			const json = await response.json();
+			
+			const date = new Date(json.next.readableDate_start);
+
+			const dateUTC = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
+
+			const apexIcon = new AttachmentBuilder(`./assets/apex.png`);
+			const embed = {
+				"type": "rich",
+				"title": `MAP ROTATION`,
+				"description": "",
+				"color": 0x44ff00,
+				"fields": [
+					{
+						"name": `Current Map`,
+						"value": `${json.current.map}`,
+						"inline": true
+					},
+					{
+						"name": `Remaining Timer`,
+						"value": `${json.current.remainingTimer}`,
+						"inline": true
+					},
+					{
+						"name": `--------------------------------------------`,
+						"value": "\u200B"
+					},
+					{
+						"name": `Next Map`,
+						"value": `${json.next.map}`,
+						"inline": true
+					},
+					{
+						"name": `Start Time`,
+						"value": `${dateUTC.toLocaleString()}`,
+						"inline": true
+					}
+				],
+				"image": {
+					"url": `${json.current.asset}`,
+					"height": 0,
+					"width": 0
+				},
+				"thumbnail": {
+					"url": `attachment://apex.png`
+				}
+			}
+			await interaction.editReply({content:'OK', embeds: [embed], files: [apexIcon] });
+
+		} catch (error) {
+			console.error(error);
+			interaction.editReply('Stupid API error...');
+		}
 	},
 };

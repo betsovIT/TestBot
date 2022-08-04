@@ -11,7 +11,10 @@ const commands = [
             option.setName('player')
                 .setDescription("The player whose stats you want to check.")
                 .setRequired(true)
-                )
+                ),
+    new SlashCommandBuilder()
+        .setName('apex-map')
+        .setDescription('Gets the current and next map in rotation.')
     ]
 	.map(command => command.toJSON());
 
@@ -20,3 +23,7 @@ const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
 rest.put(Routes.applicationGuildCommands(process.env.CLIENTID, process.env.GUILDID), { body: commands })
 	.then(() => console.log('Successfully registered application commands.'))
 	.catch(console.error);
+
+rest.put(Routes.applicationGuildCommands(process.env.CLIENTID, process.env.TESTGUILDID), { body: commands })
+.then(() => console.log('Successfully registered application commands.'))
+.catch(console.error);

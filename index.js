@@ -43,11 +43,11 @@ client.on('interactionCreate', async interaction  => {
 
 	// Execution
 	try {
-		command.execute(interaction);
+		await command.execute(interaction);
 	}
 	catch (error) {
 		console.error(error);
-		message.reply('There was an error trying to execute that command!');
+		interaction.reply('There was an error trying to execute that command!');
 	}
 });
 
