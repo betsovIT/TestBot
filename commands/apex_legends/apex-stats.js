@@ -18,7 +18,7 @@ module.exports = {
 				},
 			})
 			.then(response => response.json())
-			.then(data => {
+			.then(async data => {
 				if (data.Error != null) throw Error;
 
 				const rankDivision = new AttachmentBuilder(`./assets/rankIcons/${data.global.rank.rankName.toLowerCase()}.png`);
@@ -53,7 +53,7 @@ module.exports = {
 						  }
 					};
 
-				interaction.channel.send({ embeds: [embed], files: [rankDivision, apexIcon] });
+				await interaction.channel.send({ embeds: [embed], files: [rankDivision, apexIcon] });
 			})
 			.catch(error => {
 				console.error(error);
