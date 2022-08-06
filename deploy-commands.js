@@ -20,11 +20,11 @@ let commands = [
         .setName('play')
         .setDescription('Play one of several predefined meme sounds.'),
     new SlashCommandBuilder()
-        .setName('avatar')
-        .setDescription("Show a server member`s avatar.")
+        .setName(`avatar`)
+        .setDescription('Show a server member`s avatar.')
         .addIntegerOption(option =>
-            option.setName('memberID')
-            .setDescription("Copy member ID from the guild.")
+            option.setName('memberid')
+            .setDescription('Copy member ID from the server.')
             .setRequired(true)
             )
     ];
