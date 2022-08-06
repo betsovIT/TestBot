@@ -50,7 +50,7 @@ module.exports = {
 					},
 					{
 						"name": `Start Time`,
-						"value": `${dateUTC.toLocaleString('bg-BG')}`,
+						"value": `${date.toString('bg-BG')}`,
 						"inline": true
 					},
 					{
