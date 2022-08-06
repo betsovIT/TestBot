@@ -52,6 +52,11 @@ module.exports = {
 						"name": `Start Time`,
 						"value": `${dateUTC.toLocaleString('bg-BG')}`,
 						"inline": true
+					},
+					{
+						"name": `Test Time`,
+						"value": `${date.toString()}`,
+						"inline": true
 					}
 				],
 				"image": {
