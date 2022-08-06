@@ -3,7 +3,7 @@ const { joinVoiceChannel,  createAudioPlayer,  createAudioResource, entersState,
 module.exports = {	
 	name: 'play',
 	cooldown: 20,
-	async execute(interaction, client) {
+	async execute(interaction) {
 		if (interaction.member.voice.channel) {
 			const isInRole = interaction.member.roles.cache.some(role => role.name == 'Memer');
 

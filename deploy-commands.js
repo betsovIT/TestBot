@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, Routes, Collection } = require('discord.js');
+const { SlashCommandBuilder, Routes } = require('discord.js');
 const { REST } = require('@discordjs/rest');
 const dotenv = require('dotenv');
 const fs = require('fs');
@@ -18,9 +18,18 @@ let commands = [
         .setDescription('Gets the current and next map in rotation.'),
     new SlashCommandBuilder()
         .setName('play')
-        .setDescription('Play one of several predefined meme sounds.')
-    ]
+        .setDescription('Play one of several predefined meme sounds.'),
+    new SlashCommandBuilder()
+        .setName('avatar')
+        .setDescription("Show a server member`s avatar.")
+        .addIntegerOption(option =>
+            option.setName('memberID')
+            .setDescription("Copy member ID from the guild.")
+            .setRequired(true)
+            )
+    ];
 
+//Add options to play command
 let soundFiles = fs.readdirSync('assets/sounds')
                     .filter(f => f.endsWith('.mp3'))
                     .map(f => f.slice(0, f.length-4));

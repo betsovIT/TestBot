@@ -1,21 +1,21 @@
 module.exports = {
 	name: 'avatar',
-	description: 'Returns the avatar of a specified user.',
-	type: 'message',
 	cooldown: 10,
-	args: true,
-	async execute(message, args) {
-		let guildMember = await message.guild.members.fetch({ query: args[0], limit: 1 });
-		guildMember = guildMember.array()[0];
-		const user = await message.client.users.fetch(guildMember.id);
+	async execute(interaction) {
+		await interaction.reply('Loading...');
+		try {
+			const guildMemberId = interaction.options.data[0].value;
+			const user = await interaction.client.users.fetch(guildMemberId);
 
-		if(guildMember) {
-			message.channel.send({
-				files: [{
-					attachment: `${user.displayAvatarURL({ format: 'png', dynamic: true })}`,
-					name: 'file.jpg',
-				}],
-			});
+			if(user) {
+				await interaction.editReply({ content:"https://cdn.discordapp.com/avatars/"+guildMemberId+"/"+user.avatar+".jpeg"});
+			} else {
+				await interaction.editReply('No such member found.');
+			}
+		} catch (error) {
+			console.log(error.message || 'Error');
+			await interaction.editReply(error.message || "Error...")
 		}
+		
 	},
 };
