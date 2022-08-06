@@ -1,27 +1,47 @@
-module.exports = {
+const { joinVoiceChannel,  createAudioPlayer,  createAudioResource, entersState, StreamType,  AudioPlayerStatus,  VoiceConnectionStatus } = require("@discordjs/voice");
+
+module.exports = {	
 	name: 'play',
-	description: 'Play a meme sound.',
-	isVoice: true,
-	type: 'message',
 	cooldown: 20,
-	async execute(message, args) {
-		if (message.member.voice.channel) {
-			const isInRole = message.member.roles.cache.some(role => role.name == 'Memer');
+	async execute(interaction, client) {
+		if (interaction.member.voice.channel) {
+			const isInRole = interaction.member.roles.cache.some(role => role.name == 'Memer');
 
 			if (isInRole) {
-				const connection = await message.member.voice.channel.join();
-				const trackExp = RegExp(/[A-Za-z0-9]+/g);
-				const dispatcher = connection.play(`./assets/sounds/${args[0].match(trackExp)[0]}.mp3`, { volume: 0.4 });
-				dispatcher.on('finish', () => {
-					connection.disconnect();
-				});
+				await interaction.reply("Loading...");
+				const Player = createAudioPlayer();
+				try {
+					const resource = createAudioResource(`./assets/sounds/${interaction.options.data[0].value}.mp3`, {
+						inputType: StreamType.Arbitrary,
+						inlineVolume: true 
+					  });
+					resource.volume.setVolume(0.5);
+
+					Player.play(resource);				
+					const connection = await joinVoiceChannel({ 
+						channelId:interaction.member.voice.channel.id, 
+						guildId: interaction.guild.id, 
+						adapterCreator: interaction.guild.voiceAdapterCreator})
+					.subscribe(Player);
+
+					Player.addListener("stateChange", (oldOne, newOne) => {
+						if (newOne.status == "idle") {
+							connection.connection.disconnect();
+						}
+					});
+
+					interaction.editReply({content: `Playing ${interaction.options.data[0].value}.mp3`});
+
+				} catch (error) {
+					interaction.reply({ content: error.message || "Error" });
+				}
 			}
 			else {
-				message.reply('You don\'t have sufficent priviliges');
+				interaction.reply('You don\'t have sufficent priviliges.');
 			}
 		}
 		else {
-			message.reply('You need to join a voice channe;');
+			interaction.reply('You need to join a voice channel.');
 		}
 	},
 };

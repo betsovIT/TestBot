@@ -2,7 +2,7 @@ const {Client, Collection} = require('discord.js');
 const dotenv = require('dotenv');
 dotenv.config();
 const commandLoader = require('./services/commandProcessor.js');
-const client = new Client({ intents: [17] }); //GUILDS and GUILD_INTERACTIONS bits google it :)
+const client = new Client({ intents: [145] }); //GUILDS and GUILD_INTERACTIONS bits google it :)
 const cooldowns = new Collection();
 commandLoader.LoadCommands(client, 'commands');
 
@@ -29,7 +29,7 @@ client.on('interactionCreate', async interaction  => {
 	const cooldownAmount = (command.cooldown || 3) * 1000;
 
 	if (timestamps.has(interaction.member.id)) {
-		const expirationTime = timestamps.get(interaction.author.id) + cooldownAmount;
+		const expirationTime = timestamps.get(interaction.author?.id) + cooldownAmount;
 
 		if (now < expirationTime) {
 			const timeLeft = (expirationTime - now) / 1000;
@@ -43,7 +43,7 @@ client.on('interactionCreate', async interaction  => {
 
 	// Execution
 	try {
-		await command.execute(interaction);
+		await command.execute(interaction, client);
 	}
 	catch (error) {
 		console.error(error);
