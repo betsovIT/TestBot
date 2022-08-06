@@ -20,7 +20,6 @@ module.exports = {
 			const json = await response.json();
 			
 			const date = new Date(json.next.readableDate_start);
-
 			const dateUTC = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
 
 			const apexIcon = new AttachmentBuilder(`./assets/apex.png`);
@@ -51,7 +50,7 @@ module.exports = {
 					},
 					{
 						"name": `Start Time`,
-						"value": `${dateUTC.toLocaleString()}`,
+						"value": `${dateUTC.toLocaleString('bg-BG')}`,
 						"inline": true
 					}
 				],
