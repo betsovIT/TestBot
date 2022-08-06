@@ -15,7 +15,7 @@ module.exports = {
 						inputType: StreamType.Arbitrary,
 						inlineVolume: true 
 					  });
-					resource.volume.setVolume(0.5);
+					resource.volume.setVolume(0.3);
 
 					Player.play(resource);				
 					const connection = await joinVoiceChannel({ 
