@@ -6,18 +6,16 @@ module.exports = {
     async execute(interaction){
         interaction.reply({content: 'Calculating...'})
         const playerCount = interaction.options.data.length;
-        let numbers = [];
         for (let i = 0; i < playerCount; i++) {
-            numbers.push( (Math.random() * (100 - 0) + 0));
+            interaction.options.data[i].randomizedNumber = (Math.random() * (100 - 0) + 0);
         }
-
-        let teams = new Collection();
-
-
+        let team1, team2 = [];
         if (playerCount <= 4) {
             
-        } else {
+        } else if (playerCount > 4 && playerCount < 7) {
 
+        } else {
+            interaction.editReply({content: 'I don`t work with more than 6 players.'})
         }
     } 
 }
